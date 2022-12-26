@@ -6,11 +6,12 @@ returns information about his/her TODO list progress.
 """
 
 from requests import get
-from sys import argv
+from sys import argv as arg
 
 
 if __name__ == "__main__":
-    response = get('https://jsonplaceholder.typicode.com/todos')
+    api_todos_dict = {'userId': arg}
+    response = get('https://jsonplaceholder.typicode.com/todos',params=api_todos_dict)
     data = response.json()
     completed = 0
     total = 0
@@ -19,11 +20,11 @@ if __name__ == "__main__":
     data2 = response2.json()
 
     for i in data2:
-        if i.get('id') == int(argv[1]):
+        if i.get('id') == int(arg[1]):
             employee = i.get('name')
 
     for i in data:
-        if i.get('userId') == int(argv[1]):
+        if i.get('userId') == int(arg[1]):
             total += 1
 
             if i.get('completed') is True:
