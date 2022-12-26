@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     for i in data2:
         if i.get('id') == int(arg[1]):
-            employee = i.get('name')
+            Employee = i.get('name')
 
     for i in data:
         if i.get('userId') == int(arg[1]):
@@ -31,7 +31,7 @@ if __name__ == "__main__":
                 completed += 1
                 tasks.append(i.get('title'))
 
-    print("Employee {} is done with tasks({}/{}):".format(employee, completed,
+    print("Employee {} is done with tasks({}/{}):".format(Employee, completed,
                                                           total))
 
     for i in tasks:
