@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     for i in data2:
         if i.get('id') == int(arg[1]):
-            Employee = i.get('name')
+            Employee = i.get('Name')
 
     for i in data:
         if i.get('userId') == int(arg[1]):
