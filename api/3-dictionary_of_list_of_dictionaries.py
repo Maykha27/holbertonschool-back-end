@@ -1,39 +1,32 @@
 #!/usr/bin/python3
-
 """
-Python script that exports data in the JSON format.
+uses REST API to gather data for employee to-do list
+and exports information in CSV format to new file
 """
-
-from requests import get
-import json
-
 if __name__ == "__main__":
-    response = get('https://jsonplaceholder.typicode.com/todos/')
-    data = response.json()
+    import requests
+    from sys import argv
+    import json
 
-    row = []
-    response2 = get('https://jsonplaceholder.typicode.com/users')
-    data2 = response2.json()
+    user_URL = 'https://jsonplaceholder.typicode.com/users'
+    all_employee = requests.get(user_URL).json()
 
-    new_dict1 = {}
+    todo_dict = {}
+    for employee in all_employee:
+        tURL = 'https://jsonplaceholder.typicode.com/users/{}/todos'.format(
+            employee.get('id'))
+        all_tasks = requests.get(tURL).json()
 
-    for j in data2:
+        todo_tasks = []
+        for task in all_tasks:
+            task_dict = {}
+            task_dict["username"] = employee.get('username')
+            task_dict["task"] = task.get('title')
+            task_dict["completed"] = task.get('completed')
+            todo_tasks.append(task_dict)
+        todo_dict[employee.get('id')] = todo_tasks
+    json_string = json.dumps(todo_dict)
 
-        row = []
-        for i in data:
-
-            new_dict2 = {}
-
-            if j['id'] == i['userId']:
-
-                new_dict2['username'] = j['username']
-                new_dict2['task'] = i['title']
-                new_dict2['completed'] = i['completed']
-                row.append(new_dict2)
-
-        new_dict1[j['id']] = row
-
-    with open("todo_all_employees.json",  "w") as f:
-
-        json_obj = json.dumps(new_dict1)
-        f.write(json_obj)
+    filename = "todo_all_employees.json"
+    with open(filename, 'w') as f:
+        f.write(json_string)

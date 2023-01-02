@@ -1,41 +1,33 @@
 #!/usr/bin/python3
-
 """
-Python script that exports data in the JSON format.
+uses REST API to gather data for employee to-do list
+and exports information in CSV format to new file
 """
-
-from requests import get
-from sys import argv
-import json
-
 if __name__ == "__main__":
-    response = get('https://jsonplaceholder.typicode.com/todos/')
-    data = response.json()
+    import requests
+    from sys import argv
+    import json
 
-    row = []
-    response2 = get('https://jsonplaceholder.typicode.com/users')
-    data2 = response2.json()
+    user_URL = 'https://jsonplaceholder.typicode.com/users/{}'.format(argv[1])
+    employee = requests.get(user_URL).json()
+    employ_username = employee.get('username')
 
-    for i in data2:
-        if i['id'] == int(argv[1]):
-            u_name = i['username']
-            id_no = i['id']
+    tasks_URL = 'https://jsonplaceholder.typicode.com/users/{}/todos'.format(
+        argv[1])
+    all_tasks = requests.get(tasks_URL).json()
 
-    row = []
+    filename = "{}.json".format(argv[1])
 
-    for i in data:
+    todo_dict = {}
+    todo_tasks = []
+    for task in all_tasks:
+        task_dict = {}
+        task_dict["task"] = task.get('title')
+        task_dict["completed"] = task.get('completed')
+        task_dict["username"] = employ_username
+        todo_tasks.append(task_dict)
+        todo_dict[argv[1]] = todo_tasks
+        json_string = json.dumps(todo_dict)
 
-        new_dict = {}
-
-        if i['userId'] == int(argv[1]):
-            new_dict['username'] = u_name
-            new_dict['task'] = i['title']
-            new_dict['completed'] = i['completed']
-            row.append(new_dict)
-
-    final_dict = {}
-    final_dict[id_no] = row
-    json_obj = json.dumps(final_dict)
-
-    with open(argv[1] + ".json",  "w") as f:
-        f.write(json_obj)
+    with open(filename, 'w') as f:
+        f.write(json_string)
